@@ -1,0 +1,8 @@
+[
+  {
+    "title": "Buenas tardes, bienvenido a xd",
+    "body": "¿Que desea hacer?",
+    "answers": ["Ordenar", "Ayuda con mi pedido", "Otro"],
+    "responses":["./line/order.json", "./line/help-order.json", "./line/other.json"]
+  }
+]
