@@ -1,0 +1,8 @@
+[
+  {
+    "title":"¿Que problema tienes con tu pedido?",
+    "body": "Selecciona uno de los problemas comunes ☹",
+    "answers": ["Mi pedido no llego", "No logro ordenar lo que quiero", "otro"],
+    "responses": ["/line/help-order/dontComeMyOrder.json", "/line/help-order/cannotOrder.json", "/line/other.json"]
+  }
+]
