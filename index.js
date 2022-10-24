@@ -3,13 +3,17 @@ const { Client, LocalAuth, MessageMedia } = pkg;
 
 import qrcode from "qrcode-terminal";
 import initializeApi from "./api/index.js";
-import { operatorActive, stopBot } from "./bot/bot.config.js";
 import beginging from "./bigining.json" assert { type: "json" };
+import { operatorActive, stopBot } from "./bot/bot.config.js";
 import fs from "fs";
+import { promisify } from "util";
+
+const readFile = promisify(fs.readFile);
 
 // const begingingText = JSON.stringify(beginging);
 let isBegining = false;
-let response;
+const { title, body, answers, responses } = beginging[0];
+let currentResponse = responses;
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -29,30 +33,51 @@ client.on("auth_failure", () => {
   );
 });
 
-client.on("message", (msg) => {
+client.on("message_create", (msg) => {
   console.log("CHATS DE LOS OTROS");
   console.log(msg.from);
   console.log(msg.body);
 
-  const { title, body, answers, responses } = beginging[0];
-
   if (msg.body.toLowerCase() === "hola") {
-    sendMessage(msg.from, "Hola");
+    // sendMessage(msg.from, "ja");
     if (!isBegining) {
       const message = `*${title}* \n ${body} \n ${answers}`;
       sendMessage(msg.from, message);
       isBegining = true;
+      // response = response[messageClient];
     } else if (isBegining) {
-      let res = msg.body;
-      console.log(responses[res]);
+      let messageClient = msg.body;
+
+      if (
+        typeof parseInt(messageClient) !== "number" ||
+        messageClient < 1 ||
+        messageClient > responses.length
+      )
+        return null;
+
+      const urlFile = currentResponse[messageClient];
+      let json;
+
+      readFile(urlFile)
+        .then((data) => {
+          json = JSON.parse(data.toString()).responses;
+          console.log(data);
+        })
+        .catch((err) => {
+          json = null;
+          console.error(err);
+        });
+
+      // response = response[messageClient];
+      console.log(messageClient);
+      console.log(json);
     }
   }
 });
 
-client.on("message_ack", (msg) => {
-  if (!msg.fromMe) return;
-  console.log("CHATS MIOS");
-  console.log(msg.body);
+client.on("message_ack", (msg, ack) => {
+  // console.log(msg);
+  console.log(`ack: ${ack}`);
 });
 
 const sendMessage = (to, message) => {

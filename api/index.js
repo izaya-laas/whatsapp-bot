@@ -16,7 +16,7 @@ const initializeApi = () => {
   app.use(cors());
 
   app.use(express.json());
-  app.use(express.urlencoded());
+  app.use(express.urlencoded({extended: true}));
   app.post("/send", sendWithApi);
 
   app.listen(9000, () => {
