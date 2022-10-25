@@ -5,15 +5,12 @@ import qrcode from "qrcode-terminal";
 import initializeApi from "./api/index.js";
 import beginging from "./bigining.json" assert { type: "json" };
 import { operatorActive, stopBot } from "./bot/bot.config.js";
-import fs from "fs";
-import { promisify } from "util";
+import { validateMessageClient } from "./helpers/validateMessageClient.js";
+import { readJson } from "./helpers/readJson.js";
+import { createMessage } from "./helpers/createMessage.js";
 
-const readFile = promisify(fs.readFile);
-
-// const begingingText = JSON.stringify(beginging);
 let isBegining = false;
-const { title, body, answers, responses } = beginging[0];
-let currentResponse = responses;
+let currentResponse = beginging.responses;
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -38,45 +35,29 @@ client.on("message_create", (msg) => {
   console.log(msg.from);
   console.log(msg.body);
 
-  if (msg.body.toLowerCase() === "hola") {
-    // sendMessage(msg.from, "ja");
-    if (!isBegining) {
-      const message = `*${title}* \n ${body} \n ${answers}`;
-      sendMessage(msg.from, message);
-      isBegining = true;
-      // response = response[messageClient];
-    } else if (isBegining) {
-      let messageClient = msg.body;
+  if (!(msg.body.toLowerCase() === "hola")) return null;
 
-      if (
-        typeof parseInt(messageClient) !== "number" ||
-        messageClient < 1 ||
-        messageClient > responses.length
-      )
-        return null;
+  if (!isBegining) {
+    const message = createMessage(beginging);
+    sendMessage(msg.from, message);
+    isBegining = true;
+  } else if (isBegining) {
+    let messageClient = msg.body;
+    const MINIMUM = 1;
+    const MAXIMUM = currentResponse.length;
 
-      const urlFile = currentResponse[messageClient];
-      let json;
+    if (!validateMessageClient(messageClient, MINIMUM, MAXIMUM)) return null;
 
-      readFile(urlFile)
-        .then((data) => {
-          json = JSON.parse(data.toString()).responses;
-          console.log(data);
-        })
-        .catch((err) => {
-          json = null;
-          console.error(err);
-        });
+    const urlFile = currentResponse[messageClient];
+    const json = readJson(urlFile);
 
-      // response = response[messageClient];
-      console.log(messageClient);
-      console.log(json);
-    }
+    // response = response[messageClient];
+    console.log(messageClient);
+    console.log(json);
   }
 });
 
 client.on("message_ack", (msg, ack) => {
-  // console.log(msg);
   console.log(`ack: ${ack}`);
 });
 
