@@ -1,7 +1,11 @@
 {
   "title": "Buenas tardes, bienvenido a xd",
   "body": "¿Que desea hacer?",
-  "answers": ["Ordenar", "Ayuda con mi pedido", "Otro"],
+  "answers": [
+    { "id": "1", "title": "Ordenar" },
+    { "id": "2", "title": "Ayuda con mi pedido" },
+    { "id": "Otro" }
+  ],
   "responses": [
     "./line/order.json",
     "./line/help-order.json",

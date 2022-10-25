@@ -8,9 +8,10 @@ import { operatorActive, stopBot } from "./bot/bot.config.js";
 import { validateMessageClient } from "./helpers/validateMessageClient.js";
 import { readJson } from "./helpers/readJson.js";
 import { createMessage } from "./helpers/createMessage.js";
+import { createList } from "./helpers/createList.js";
 
 let isBegining = false;
-let currentResponse = beginging.responses;
+let currentBotResponses = beginging.responses;
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -30,30 +31,39 @@ client.on("auth_failure", () => {
   );
 });
 
-client.on("message_create", (msg) => {
+client.on("message_create", async (msg) => {
   console.log("CHATS DE LOS OTROS");
-  console.log(msg.from);
-  console.log(msg.body);
+  const messageClient = msg.body;
+  const phoneClient = msg.from;
 
-  if (!(msg.body.toLowerCase() === "hola")) return null;
+  console.log(!(messageClient.toLowerCase() === "hola"));
+
+  if (!(messageClient.toLowerCase() === "hola")) return null;
+
+  const MINIMUM = 1;
+  const MAXIMUM = currentBotResponses.length;
+  console.log("Dalee capo 2.0");
+  const botMessage = await createList(beginging);
+
+  console.log("Dalee capo");
 
   if (!isBegining) {
-    const message = createMessage(beginging);
-    sendMessage(msg.from, message);
+    console.log("Recien comienza");
+    sendMessage(phoneClient, botMessage);
     isBegining = true;
   } else if (isBegining) {
-    let messageClient = msg.body;
-    const MINIMUM = 1;
-    const MAXIMUM = currentResponse.length;
-
+    console.log("Ya empezo");
     if (!validateMessageClient(messageClient, MINIMUM, MAXIMUM)) return null;
 
-    const urlFile = currentResponse[messageClient];
-    const json = readJson(urlFile);
+    const ResponseFile = currentBotResponses[messageClient];
+    currentBotResponses = readJson(ResponseFile);
 
-    // response = response[messageClient];
+    botMessage = createMessage(currentBotResponses);
+
     console.log(messageClient);
     console.log(json);
+  } else {
+    console.log("sadjdasjs");
   }
 });
 
@@ -62,6 +72,8 @@ client.on("message_ack", (msg, ack) => {
 });
 
 const sendMessage = (to, message) => {
+  console.log("naaaaa");
+
   client.sendMessage(to, message);
 };
 
@@ -69,6 +81,11 @@ const sendMedia = (to, file) => {
   const mediaFile = MessageMedia.fromFilePath(`/media-send/${file}`);
   client.sendMessage(to, mediaFile);
 };
+
+process.on("uncaughtException", (err, origin) => {
+  console.log(err);
+  console.log(origin);
+});
 
 client.initialize();
 initializeApi();
