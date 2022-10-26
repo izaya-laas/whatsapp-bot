@@ -4,15 +4,17 @@ import { promisify } from "util";
 const readFile = promisify(fs.readFile);
 
 const readJson = (urlFile) => {
-  readFile(urlFile)
+  const res = readFile(urlFile)
     .then((data) => {
-      json = JSON.parse(data.toString()).responses;
-      console.log(data);
+      console.log(data.toString());
+      return JSON.parse(data.toString()).responses;
     })
     .catch((err) => {
-      json = null;
       console.error(err);
+      return null;
     });
+
+  return res;
 };
 
 export { readJson };

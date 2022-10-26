@@ -12,6 +12,7 @@ import { createList } from "./helpers/createList.js";
 
 let isBegining = false;
 let currentBotResponses = beginging.responses;
+let botMessage = "";
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -35,35 +36,27 @@ client.on("message_create", async (msg) => {
   console.log("CHATS DE LOS OTROS");
   const messageClient = msg.body;
   const phoneClient = msg.from;
-
-  console.log(!(messageClient.toLowerCase() === "hola"));
-
-  if (!(messageClient.toLowerCase() === "hola")) return null;
-
+  if (phoneClient !== "5492302210818@c.us") return null;
   const MINIMUM = 1;
   const MAXIMUM = currentBotResponses.length;
-  console.log("Dalee capo 2.0");
-  const botMessage = createMessage(beginging);
-
-  console.log("Dalee capo");
-
+  botMessage = createMessage(beginging);
   if (!isBegining) {
     console.log("Recien comienza");
     sendMessage(phoneClient, botMessage);
     isBegining = true;
-  } else if (isBegining) {
-    console.log("Ya empezo");
-    if (!validateMessageClient(messageClient, MINIMUM, MAXIMUM)) return null;
-
+  } else {
+    console.log("Ya empezo la papa");
+    if (!validateMessageClient(messageClient, MINIMUM, MAXIMUM)) {
+      sendMessage(
+        phoneClient,
+        `Por favor seleccciona una opción entre ${MINIMUM} y ${MAXIMUM}`
+      );
+    }
     const ResponseFile = currentBotResponses[messageClient];
     currentBotResponses = readJson(ResponseFile);
-
+    console.log(ResponseFile);
+    console.log(currentBotResponses);
     botMessage = createMessage(currentBotResponses);
-
-    console.log(messageClient);
-    console.log(json);
-  } else {
-    console.log("sadjdasjs");
   }
 });
 
@@ -83,7 +76,7 @@ const sendMedia = (to, file) => {
 };
 
 process.on("uncaughtException", (err, origin) => {
-  console.log(err);
+  console.log(err.message);
   console.log(origin);
 });
 

@@ -4,5 +4,3 @@ const validateMessageClient = (message, min, max) => {
 };
 
 export { validateMessageClient };
-
-console.log(validateMessageClient("5", 1, 4));
