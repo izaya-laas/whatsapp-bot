@@ -43,7 +43,7 @@ client.on("message_create", async (msg) => {
   const MINIMUM = 1;
   const MAXIMUM = currentBotResponses.length;
   console.log("Dalee capo 2.0");
-  const botMessage = await createList(beginging);
+  const botMessage = createMessage(beginging);
 
   console.log("Dalee capo");
 

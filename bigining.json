@@ -4,7 +4,7 @@
   "answers": [
     { "id": "1", "title": "Ordenar" },
     { "id": "2", "title": "Ayuda con mi pedido" },
-    { "id": "Otro" }
+    { "id": "Otro", "title": "Otro" }
   ],
   "responses": [
     "./line/order.json",
