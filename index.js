@@ -4,10 +4,10 @@ const { Client, LocalAuth, MessageMedia } = pkg;
 import qrcode from "qrcode-terminal";
 import initializeApi from "./api/index.js";
 import beginging from "./bigining.json" assert { type: "json" };
-import { operatorActive, stopBot } from "./bot/bot.config.js";
 import { validateMessageClient } from "./helpers/validateMessageClient.js";
 import { readJson } from "./helpers/readJson.js";
 import { createMessage } from "./helpers/createMessage.js";
+import { operatorActive, stopBot } from "./bot/bot.config.js";
 import { createList } from "./helpers/createList.js";
 
 let isBegining = false;
@@ -37,6 +37,7 @@ client.on("message_create", async (msg) => {
   const messageClient = msg.body;
   const phoneClient = msg.from;
   if (phoneClient !== "5492302210818@c.us") return null;
+
   const MINIMUM = 1;
   const MAXIMUM = currentBotResponses.length;
   botMessage = createMessage(beginging);
@@ -53,7 +54,7 @@ client.on("message_create", async (msg) => {
       );
     }
     const ResponseFile = currentBotResponses[messageClient];
-    currentBotResponses = readJson(ResponseFile);
+    currentBotResponses = await readJson(ResponseFile);
     console.log(ResponseFile);
     console.log(currentBotResponses);
     botMessage = createMessage(currentBotResponses);
