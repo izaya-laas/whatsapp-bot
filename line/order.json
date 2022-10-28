@@ -1,10 +1,6 @@
 {
   "title": "Has seleccionado ordenar",
   "body": "¿Que desea ordenar?",
-  "answers": [
-    { "id": "1", "title": "Pizza" },
-    { "id": "2", "title": "Tarta" },
-    { "id": "3", "title": "Empanadas" }
-  ],
+  "answers": ["Pizza", "Tarta", "Empanadas"],
   "responses": ["./order/quantity.json"]
 }

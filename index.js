@@ -7,8 +7,7 @@ import beginging from "./bigining.json" assert { type: "json" };
 import { validateMessageClient } from "./helpers/validateMessageClient.js";
 import { readJson } from "./helpers/readJson.js";
 import { createMessage } from "./helpers/createMessage.js";
-import { operatorActive, stopBot } from "./bot/bot.config.js";
-import { createList } from "./helpers/createList.js";
+import { errorLength } from "./helpers/errors/errorLength.js";
 
 let isBegining = false;
 let currentBotResponses = beginging.responses;
@@ -34,30 +33,30 @@ client.on("auth_failure", () => {
 
 client.on("message_create", async (msg) => {
   console.log("CHATS DE LOS OTROS");
+
   const messageClient = msg.body;
   const phoneClient = msg.from;
+
   if (phoneClient !== "5492302210818@c.us") return null;
 
   const MINIMUM = 1;
   const MAXIMUM = currentBotResponses.length;
-  botMessage = createMessage(beginging);
+
   if (!isBegining) {
     console.log("Recien comienza");
+    botMessage = createMessage(beginging);
     sendMessage(phoneClient, botMessage);
     isBegining = true;
   } else {
     console.log("Ya empezo la papa");
-    if (!validateMessageClient(messageClient, MINIMUM, MAXIMUM)) {
-      sendMessage(
-        phoneClient,
-        `Por favor seleccciona una opción entre ${MINIMUM} y ${MAXIMUM}`
-      );
-    }
-    const ResponseFile = currentBotResponses[messageClient];
-    currentBotResponses = await readJson(ResponseFile);
-    console.log(ResponseFile);
-    console.log(currentBotResponses);
+
+    if (!validateMessageClient(messageClient, MINIMUM, MAXIMUM))
+      errorLength(MINIMUM, MAXIMUM);
+
+    const responseFile = currentBotResponses[messageClient];
+    currentBotResponses = await readJson(responseFile);
     botMessage = createMessage(currentBotResponses);
+    sendMessage(phoneClient, botMessage);
   }
 });
 
@@ -85,6 +84,12 @@ client.initialize();
 initializeApi();
 
 export { sendMessage };
+
+/**
+ * botMessage: mensaje generado por bot
+ * currentBotResponses: Respuestas actuales del bot (Solo los links a hacia los otros JSON)
+ * responseFile: respuesta elegida segun la contestacion del cliente (Link al file)
+ */
 
 //Datos a guardar de usuario: getContact().then.number = (numero) |  _data > notifyName (nombre) || DeviceType (Tipo-celular) ||
 
